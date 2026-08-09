@@ -462,7 +462,12 @@ class Session:
                                certificate_pinning: Optional[Dict[str, List[str]]] = None
                                ) -> dict:
 
-        # https://bogdanfinn.gitbook.io/open-source-oasis/shared-library/payload
+        headers_result = {}
+        headers_order = []
+        for key, value in headers.items():
+            if value is not None:
+                headers_result[key] = value
+            headers_order.append(key)
         request_payload = {
             "additionalDecode": self.additional_decode,
             "catchPanics": self.catch_panics,
@@ -474,8 +479,8 @@ class Session:
             "disableIPV4": self.disable_ipv4,
             "followRedirects": False,
             "forceHttp1": self.force_http1,
-            "headerOrder": self.header_order,
-            "headers": dict(headers),
+            "headerOrder": headers_order,
+            "headers": headers_result,
             "insecureSkipVerify": not verify,
             "isByteRequest": is_byte_request,
             "isByteResponse": True,
@@ -505,20 +510,6 @@ class Session:
 
         if certificate_pinning:
             request_payload["certificatePinningHosts"] = certificate_pinning
-
-        if False:
-            request_payload["transportOptions"] = {
-                "disableCompression": False,
-                "disableKeepAlives": False,
-                "idleConnTimeout": 0,
-                "maxConnsPerHost": 0,
-                "maxIdleConns": 0,
-                "maxIdleConnsPerHost": 0,
-                "maxResponseHeaderBytes": 0,
-                "readBufferSize": 0,
-                "writeBufferSize": 0,
-            }
-
         if self.client_identifier is None:
             request_payload["customTlsClient"] = {
                 "ECHCandidateCipherSuites": None,

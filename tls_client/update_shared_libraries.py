@@ -1,6 +1,6 @@
 import requests
-
-shared_library_version = "1.9.1"
+from concurrent.futures import ThreadPoolExecutor
+shared_library_version = "1.15.1"
 github_download_url = "https://github.com//bogdanfinn/tls-client/releases/download/v{}/{}"
 github_repo_filenames = [
     # Windows
@@ -15,10 +15,10 @@ github_repo_filenames = [
     f"tls-client-linux-arm64-{shared_library_version}.so"
 ]
 dependency_filenames = [
-    # Windows
+    ## Windows
     "tls-client-32.dll",
     "tls-client-64.dll",
-    # MacOS
+    ## MacOS
     "tls-client-arm64.dylib",
     "tls-client-x86.dylib",
     # Linux
@@ -27,10 +27,15 @@ dependency_filenames = [
     "tls-client-arm64.so"
 ]
 
-for github_filename, dependency_filename in zip(github_repo_filenames, dependency_filenames):
+def install_lib(github_filename, dependency_filename):
     response = requests.get(
         url=github_download_url.format(shared_library_version, github_filename)
     )
 
     with open(f"dependencies/{dependency_filename}", "wb") as f:
         f.write(response.content)
+        print(f"updated {dependency_filename}")
+with ThreadPoolExecutor(50) as tpe:
+    
+    for github_filename, dependency_filename in zip(github_repo_filenames, dependency_filenames):
+        tpe.submit(install_lib, github_filename, dependency_filename)
