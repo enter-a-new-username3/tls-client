@@ -1,3 +1,5 @@
+import sys,os
+sys.path.append("/home/ted/github_repos/tls-client-python")
 import tls_client
 
 # You can also use the following as `client_identifier`:
@@ -23,5 +25,5 @@ res = session.get(
     headers={
         "key1": "value1",
     },
-    proxy="http://user:password@host:port"
 )
+print(res.text)
