@@ -85,6 +85,7 @@ class Session:
                  priority_frames: Optional[list] = None,
                  header_order: Optional[List[str]] = None,
                  header_priority: Optional[List[str]] = None,
+                 proxy: Optional[Dict[str, str]] = None,
                  random_tls_extension_order: bool = False,
                  force_http1: bool = False,
                  catch_panics: bool = False,
@@ -97,26 +98,14 @@ class Session:
         self.MAX_REDIRECTS: int = 30
 
         self._session_id = str(uuid.uuid4())
-        # --- Standard Settings ----------------------------------------------------------------------------------------
-
-        # Case-insensitive dictionary of headers, send on each request
-        # self.headers = CaseInsensitiveDict(
-        #     {
-        #         "User-Agent": f"tls-client/{__version__}",
-        #         "Accept-Encoding": "gzip, deflate, br",
-        #         "Accept": "*/*",
-        #         "Connection": "keep-alive",
-        #     }
-        # )
         self.headers = {}
 
 
         # Example:
-        # {
-        #     "http": "http://user:pass@ip:port",
-        #     "https": "http://user:pass@ip:port"
-        # }
-        self.proxies = {}
+        # http://user:pass@ip:port
+        # user:pass@ip:port
+        # ip:port:user:pass
+        self.proxy = proxy
 
         # Dictionary of querystring data to attach to each request. The dictionary values may be lists for representing
         # multivalued query parameters.
@@ -437,15 +426,22 @@ class Session:
             for c in cookies
         ]
 
-    def _get_proxy(self, proxy: Optional[Dict] = None, proxies: Optional[Dict] = None) -> str:
-        proxy = proxy or proxies or self.proxies
-
-        if isinstance(proxy, dict) and "http" in proxy:
-            return proxy["http"]
-        elif isinstance(proxy, str):
+    def _get_proxy(self, proxy: Optional[Dict] = None) -> str:
+        proxy = proxy or self.proxy
+        return self._format_proxy(proxy)
+    
+    def _format_proxy(self, proxy: str):
+        if "@" in proxy:
+            if not proxy.startswith("http://"):
+                return "http://" + proxy
             return proxy
-        else:
-            return ""
+        elif not proxy.startswith("http://") and proxy.count(":") == 3:
+            host, port, username, password = proxy.split(":")
+            return f"http://{username}:{password}@{host}:{port}"
+        elif proxy.startswith("http://") and proxy.count(":") == 4:
+            host, port, username, password = proxy[7:].split(":")
+            return f"http://{username}:{password}@{host}:{port}"
+        return proxy
 
     def _build_request_payload(self,
                                method: str,
@@ -548,7 +544,6 @@ class Session:
             verify: Optional[bool] = True,
             timeout: Optional[int] = None,
             proxy: Optional[Dict] = None,
-            proxies: Optional[Dict] = None,
             stream: Optional[bool] = False,
             chunk_size: Optional[int] = 1024,
     ) -> Response:
@@ -563,7 +558,7 @@ class Session:
 
         request_cookies = self._prepare_cookies(cookies)
 
-        proxy = self._get_proxy(proxy, proxies)
+        proxy = self._get_proxy(proxy)
 
         timeout = timeout or self.timeout
 
