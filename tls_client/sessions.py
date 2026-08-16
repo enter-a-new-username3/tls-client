@@ -83,7 +83,6 @@ class Session:
                  pseudo_header_order: Optional[List[str]] = None,
                  connection_flow: Optional[int] = None,
                  priority_frames: Optional[list] = None,
-                 header_order: Optional[List[str]] = None,
                  header_priority: Optional[List[str]] = None,
                  proxy: Optional[Dict[str, str]] = None,
                  random_tls_extension_order: bool = False,
@@ -295,14 +294,6 @@ class Session:
         #   }
         # ]
         self.priority_frames = priority_frames
-
-        # Order of your headers
-        # Example:
-        # [
-        #   "key1",
-        #   "key2"
-        # ]
-        self.header_order = header_order
 
         # Header Priority
         # Example:
