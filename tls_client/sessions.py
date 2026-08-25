@@ -417,9 +417,10 @@ class Session:
             for c in cookies
         ]
 
-    def _get_proxy(self, proxy: Optional[Dict] = None) -> str:
+    def _get_proxy(self, proxy: Optional[str] = None) -> str:
         proxy = proxy or self.proxy
-        return self._format_proxy(proxy)
+        if proxy:
+            return self._format_proxy(proxy)
     
     def _format_proxy(self, proxy: str):
         if "@" in proxy:
