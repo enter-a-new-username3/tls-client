@@ -59,6 +59,8 @@ ClientIdentifiers: TypeAlias = Literal[
     'firefox_147',
     'firefox_147_PSK',
     'firefox_148',
+    "firefox_154",
+    "firefox_154_PSK"
     'opera_89',
     'opera_90',
     'opera_91',

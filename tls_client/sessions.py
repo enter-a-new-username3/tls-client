@@ -70,7 +70,7 @@ class SteamThread(threading.Thread):
 
 class Session:
     def __init__(self,
-                 client_identifier: ClientIdentifiers = "chrome_124",
+                 client_identifier: ClientIdentifiers = "chrome_150",
                  ja3_string: Optional[str] = None,
                  h2_settings: Optional[Dict[str, int]] = None,
                  h2_settings_order: Optional[List[str]] = None,
@@ -447,7 +447,9 @@ class Session:
                                verify: bool,
                                stream: bool,
                                chunk_size: int,
-                               certificate_pinning: Optional[Dict[str, List[str]]] = None
+                               certificate_pinning: Optional[Dict[str, List[str]]] = None,
+                               with_custom_cookie_jar=False,
+                               without_cookie_jar=False
                                ) -> dict:
 
         headers_result = {}
@@ -488,8 +490,8 @@ class Session:
             "timeoutSeconds": timeout,
             # "tlsClientIdentifier": "",
             "withDebug": self.debug,
-            "withDefaultCookieJar": False,
-            "withoutCookieJar": False,
+            "withCustomCookieJar": with_custom_cookie_jar,
+            "withoutCookieJar": without_cookie_jar,
             # "withRandomTLSExtensionOrder": False,
         }
 
@@ -538,6 +540,8 @@ class Session:
             proxy: Optional[Dict] = None,
             stream: Optional[bool] = False,
             chunk_size: Optional[int] = 1024,
+            with_custom_cookie_jar=False,
+            without_cookie_jar=False
     ) -> Response:
 
         url = self._prepare_url(url, params)
@@ -575,7 +579,9 @@ class Session:
                 verify=verify,
                 stream=stream,
                 chunk_size=chunk_size,
-                certificate_pinning=certificate_pinning
+                certificate_pinning=certificate_pinning,
+                with_custom_cookie_jar=with_custom_cookie_jar,
+                without_cookie_jar=without_cookie_jar
             )
 
             # Execute the request using the TLS client
