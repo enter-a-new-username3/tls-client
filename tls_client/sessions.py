@@ -78,7 +78,7 @@ class Session:
                  supported_delegated_credentials_algorithms: Optional[List[str]] = None,
                  supported_versions: Optional[List[str]] = None,
                  key_share_curves: Optional[List[str]] = None,
-                 cert_compression_algo: str = None,
+                 cert_compression_algos: str = None,
                  additional_decode: str = None,
                  pseudo_header_order: Optional[List[str]] = None,
                  connection_flow: Optional[int] = None,
@@ -252,7 +252,7 @@ class Session:
 
         # Cert Compression Algorithm
         # Examples: "zlib", "brotli", "zstd"
-        self.cert_compression_algo = cert_compression_algo
+        self.cert_compression_algos = cert_compression_algos
 
         # Additional Decode
         # Make sure the go code decodes the response body once explicit by provided algorithm.
@@ -504,7 +504,7 @@ class Session:
                 "ECHCandidatePayloads": None,
                 "alpnProtocols": None,
                 "alpsProtocols": None,
-                "certCompressionAlgo": self.cert_compression_algo,
+                "certCompressionAlgos": self.cert_compression_algos,
                 "connectionFlow": self.connection_flow,
                 "h2Settings": self.h2_settings,
                 "h2SettingsOrder": self.h2_settings_order,
