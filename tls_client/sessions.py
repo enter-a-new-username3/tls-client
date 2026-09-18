@@ -540,7 +540,7 @@ class Session:
             proxy: Optional[Dict] = None,
             stream: Optional[bool] = False,
             chunk_size: Optional[int] = 1024,
-            with_custom_cookie_jar=False,
+            with_custom_cookie_jar=True,
             without_cookie_jar=False
     ) -> Response:
 
